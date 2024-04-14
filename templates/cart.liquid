@@ -1,0 +1,94 @@
+<div class="sm:gap-2 gap-y-2 bg-slate-100 flex-1 w-full max-w-6xl sm:grid-cols-5 grid-cols-1 grid items-start py-6 pb-20 sm:px-10 px-4">
+    <div class="col-span-3 bg-white rounded shadow p-4">
+        <h2 class="text-2xl font-semibold">Winkelwagen (5)</h2>
+        <ul class="flex flex-col">
+            {% for item in cart.items %}
+                
+                <li class="flex py-6 gap-4">
+                    <img 
+                        class="w-24 h-32 object-cover"
+                        src="{{ item.image | img_url: 'medium' }}"
+                    >
+                    <div class="flex flex-1 flex-col justify-between sm:flex-row">
+                        <div class="flex flex-col">
+                            <div class="grid gap-1 leading-4">
+                                <h2 class="text-xl font-serif uppercase font-bold text-slate-800 tracking-tight">
+                                    {{ item.title }}
+                                </h2>
+                                <p>Kleur: {{ item.options_with_values[0].value }}</p>
+                                <p>Size: {{ item.options_with_values[1].value }}</p>
+                                <div class="flex items-end gap-1">
+                                    <span class="text-base">{{ item.price | money }}</span>
+                                    <span class="text-xs mb-1">Inclusief btw</span>
+                                </div>
+                            </div>
+                            <div class="hidden sm:flex mt-auto">
+                                {% render "remove", item: item %}
+                            </div>
+                        </div>
+                        <div class="flex sm:mt-0 mt-4">
+                            <div class="sm:hidden">
+                                {% render "remove", item: item %}
+                            </div>
+                            <form action="/cart/update" method="post" class="mt-auto ml-auto">
+                                <select 
+                                    name="updates[{{ item.key }}]" 
+                                    id="select-{{ item.key }}" 
+                                    class=" border-slate-400 px-4 py-0.5 border rounded quantity-select" 
+                                    onchange="this.form.submit()"
+                                >
+                                {% for i in (1..5) %}
+                                    <option 
+                                        value="{{ i }}" 
+                                        {% if item.quantity == i %}selected{% endif %}
+                                    >
+                                        {{ i }}
+                                    </option>
+                                {% endfor %}
+                                </select>
+                            </form>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-span-2 rounded shadow bg-white p-4">
+        <h2 class="text-2xl font-semibold">Totaalprijs</h2>
+        <div class="flex text-sm flex-col py-4">
+            <p class="flex py-3 justify-between">
+                <span>Subtotaal</span>
+                <span>
+                    {{ cart.items_subtotal_price | money }}
+                </span>
+            </p>
+            <p class="flex py-3 justify-between">
+                <span>Verzending</span>
+                {% if checkout.shipping_address != null %}
+                    <span> {{ checkout.shipping_price }} </span>
+                    {% else %}
+                    <span>Gratis</span>
+                {% endif %}
+            </p>
+            <p class="flex border-t font-bold py-4 justify-between">
+                <span>Totaalprijs</span><span>{{ cart.total_price | money }}</span>
+            </p>
+        </div>
+        <a href="/checkout">
+            <button class="bg-blue-500 py-2 rounded uppercase text-white w-full text-sm font-bold">
+                Naar de kassa
+            </button>
+        </a>
+    </div>
+    <div class="col-span-3 bg-white rounded shadow p-4">
+        <h2 class="text-2xl font-semibold">Beschikbare betaalmethodes</h2>
+        {% assign enabled_payment_types = 'visa,master,american_express,paypal,ideal,klarna' | remove: ' ' | split: ',' %}
+        <ul class="flex flex-wrap gap-2 mt-6" role="list">
+            {%- for type in enabled_payment_types -%}
+                <li class="list-payment__item">
+                    {{ type | payment_type_svg_tag: class: "w-10 sm:w-12" }}
+                </li>
+            {%- endfor -%}
+        </ul>
+    </div>
+</div>

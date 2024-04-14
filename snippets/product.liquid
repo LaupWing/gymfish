@@ -1,0 +1,26 @@
+<a 
+    class="flex flex-col"
+    href="{{ product.url }}"
+>
+    <img
+        class="aspect-[4/5] object-contain"
+        src="{{ product.featured_image | img_url: "1800x1800" }}"
+        alt=""
+    />
+    <div class="flex text-base flex-col my-2 gap-[2px] leading-5">
+        <h2 class="font-semibold">{{ product.title }}</h2>
+        <p class="text-slate-500">Slim fit</p>
+        <p class="text-slate-500">{{product.variants[0].title}}</p>
+        {% if product.compare_at_price > product.price %}
+            <div class="flex gap-2">
+                <span class="opacity-40 line-through">{{ product.compare_at_price | money }}</span>
+                <span class="font-bold text-red-500">{{ product.price | money }}</span>
+            </div>
+            <p class="text-red-500">On Sale!</p>
+        {% else %}
+            <div class="flex gap-2">
+                <span class="font-bold text-red-500">{{ product.price | money }}</span>
+            </div>
+        {% endif %}
+    </div>
+</a>

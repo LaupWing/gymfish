@@ -1,0 +1,11 @@
+{% render "image-banner" %}
+<div class="grid px-6 my-20 gap-6 grid-cols-1 sm:grid-cols-3 max-w-6xl w-full mx-auto">
+    <div class="col-span-full mb-4">
+        <h2 class="text-2xl uppercase font-bold text-slate-800 tracking-tight">
+            New collection
+        </h2>
+    </div>
+    {% for product in collections["frontpage"].products %}
+        {% render "product", product: product %}
+    {% endfor %}
+</div>

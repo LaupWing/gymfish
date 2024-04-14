@@ -1,0 +1,28 @@
+{% assign featured_collection = collections["frontpage"] %}
+{% assign first_product_image_url =  featured_collection.products[0].variants[0] | img_url: '2000x2000' %}
+{% assign second_product_image_url =  featured_collection.products[0].variants[1] | img_url: '8000x8000' %}
+<section class="h-[80vh] sm:h-[80vh] grid grid-cols-1 sm:grid-cols-2 relative overflow-hidden w-full">
+    <div class="absolute top-0 left-0 right-0 bottom-0 bg-slate-600/40 z-10"></div>
+    <div class="sm:h-full overflow-hidden flex items-center justify-center sm:w-auto ">
+        <img
+            class="object-contain h-full"
+            src="{{ first_product_image_url }}"
+            alt=""
+        />
+    </div>
+    <div class="sm:h-full overflow-hidden flex items-center justify-center sm:w-auto ">
+        <img
+            class="object-contain h-full"
+            src="{{ second_product_image_url }}"
+            alt=""
+        />
+    </div>
+    <div class="absolute bottom-0 left-0 right-0 p-4 flex justify-center items-center gap-4 z-50">
+        <button class="bg-slate-600/40 backdrop-blur-md font-bold text-sm uppercase text-white w-28 py-2 rounded-full">
+            Button1
+        </button>
+        <button class="bg-white font-bold text-sm uppercase text-slate-600 w-28 py-2 rounded-full">
+            Button2
+        </button>
+    </div>
+</section>

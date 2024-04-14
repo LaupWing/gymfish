@@ -1,0 +1,143 @@
+{%- assign selected_variant = product.selected_or_first_available_variant -%}
+{%- assign featured_media = selected_variant.featured_media -%}
+
+<div class="gap-2 w-full max-w-6xl grid-cols-1 sm:grid-cols-2 grid items-start py-6 pb-20 sm:px-10 px-4">
+    <div class="flex sm:flex-row flex-col-reverse items-start gap-4">
+        <div class="flex sm:max-h-[80vh] overflow-y-auto scrollbar-w-4 scrollbar-thumb-slate-300 scrollbar-track-slate-100 scrollbar-thumb-rounded-full scrollbar-track-rounded-full pr-1 scrollbar-thin flex-shrink-0 sm:flex-col flex-row w-full sm:w-auto gap-4">
+            {% for image in product.images %}
+                <img
+                    {% if featured_media.alt != image.alt %}
+                        style="display: none;"
+                    {% endif %}
+                    class="w-24 border-2 border-slate-100 aspect-[4/5] object-cover {%  if image.src == featured_media.src %} border-slate-950 {% endif %}"
+                    src="{{ image | img_url: '2000x2000' }}"
+                    alt=""
+                >
+            {% endfor %}
+        </div>
+        <div class="aspect-[4/5]">
+            <img
+                class="flex-shrink w-full h-full object-contain"
+                src="{{ featured_media | img_url: '2000x2000' }}"
+                alt=""
+            >
+        </div>
+    </div>
+    <div class=" max-w-md flex gap-12 flex-col ml-auto w-full h-full">
+        <div class="grid gap-1">
+            <h2 class="text-4xl font-serif uppercase font-bold text-slate-800 tracking-tight">
+                {{ product.title }}
+            </h2>
+            <div class="flex items-end gap-1">
+                <span class="text-2xl">
+                    {{ product.price | money }}
+                </span>
+                {%- if cart.taxes_included -%}
+                    <span class="text-xs mb-1">Inclusief
+                        btw
+                    </span>
+                {%- endif -%}
+            </div>
+        </div>
+        {%- unless product.has_only_default_variant -%}
+            {%- for option in product.options_with_values -%}
+                {%- assign option_name = option.name | downcase -%}
+                {% case option_name %}
+                    {% when "color" %}
+                        <div class="grid gap-1">
+                            <h3>Kleur <span>{{ option.selected_value }}</span></h3>
+                            <div class="flex flex-wrap gap-2">
+                                
+                                {% for value in option.values %}
+                                    {% assign color_variant = product.variants | where: "option1", value |  where: "option2", selected_variant.option2 | first %}
+                                    {% if color_variant %}
+                                        <a href="{{ color_variant.url }}">
+                                            <img 
+                                                class="w-16 border-2 rounded px-1 {% if option.selected_value == value %} border-black{% endif %} aspect-[4/5] object-contain"
+                                                src="{{ color_variant.featured_media | img_url: 'small' }}"
+                                                alt="{{ color_variant.featured_media.alt | escape }}"
+                                            >
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% when "size" %}
+                        <div class="grid gap-1">
+                            <h3>Selecteer maat</h3>
+                            <div class="flex flex-wrap gap-2 bg-slate-100 p-1 rounded-md border">
+                                {% for value in option.values %}
+                                    {% assign size_variant = product.variants | where: "option2", value |  where: "option1", selected_variant.option1 | first %}
+                                    <button class="flex-1 flex border border-transparent text-center hover:border rounded min-w-20 disabled:cursor-not-allowed disabled:bg-slate-50 {%-  if option.selected_value == value %} bg-slate-200 {% endif %}" {% if size_variant == null %}
+                                        disabled
+                                    {% endif %} >
+                                        {% if size_variant != null  %}
+                                            <a class="text-center flex-1" href="{{ size_variant.url }}">
+                                                {{ value }}
+                                            </a>
+                                        {% else %}
+                                            <span class="flex-1 text-center text-slate-200">
+                                                {{ value }}
+                                            </span>
+                                        {% endif %}
+                                    </button>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% else %}
+                        
+                {% endcase %}
+            {%- endfor -%}
+        {%- endunless -%}
+        {%- form 'product',
+            product,
+            id: product_form_id,
+            class: "grid gap-1",
+            novalidate: "novalidate",
+            data-type: "add-to-cart-form"
+        -%}
+            <input
+                type="hidden"
+                name="id"
+                value="{{ product.selected_or_first_available_variant.id }}"
+                {% if product.selected_or_first_available_variant.available == false or quantity_rule_soldout %}
+                    disabled
+                {% endif %}
+                class="product-variant-id"
+            >
+            <button type="submit" class="uppercase text-white bg-slate-900 font-bold py-3 text-xs rounded-md">Voeg
+                toe aan winkelwagen
+            </button>
+            {{ form | payment_button }}
+        {%- endform -%}
+        <div class="rounded text-xs bg-slate-100 p-4">
+            <p class="text-slate-900"><strong>Gratis verzending</strong> 2-3 dagen</p>
+        </div>
+        <div class="grid gap-1">
+            <input 
+                type="checkbox" 
+                class="peer hidden" 
+                name="description" 
+                id="description"
+            >
+            <label
+                for="description" 
+                class="flex justify-between"
+            >
+                <h3 class="font-serif text-xl">Beschrijving</h3>
+                <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width="24"
+                    height="24" 
+                    viewBox="0 0 24 24" 
+                    fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down">
+                    <path d="m6 9 6 6 6-6"></path>
+                </svg>
+            </label>
+            <p class="text-slate-900 duration-500 overflow-hidden peer-checked:h-auto h-0">
+                {{ product.description }}
+            </p>
+        </div>
+    </div>
+</div>

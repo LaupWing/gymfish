@@ -1,0 +1,74 @@
+<header class="w-full py-6 px-10 border-b">
+    <div class="max-w-6xl grid mx-auto grid-cols-6 items-center ">
+        <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="24" 
+            height="24" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            stroke-width="2" 
+            stroke-linecap="round" 
+            stroke-linejoin="round" 
+            class="sm:hidden"
+        >
+            <line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/>
+        </svg>
+        <a class="sm:col-span-1 col-span-4 text-center" href="{{ routes.root_url }}">
+            <h1 class="font-serif text-2xl font-semibold">GymFish</h1>
+        </a>
+        <nav 
+            id="header__menu" 
+            class="sm:flex col-span-4 justify-center text-slate-800 h-full flex-shrink-0 space-x-8 font-semibold uppercase text-sm hidden"
+        >
+            {% for link in linklists.main-menu.links %}
+                <div class="flex-shrink-0 flex items-center group relative">
+                    <a href="{{ link.url }}">{{ link.title }}</a>
+                    <div
+                        class="h-[2.5px] scale-x-0 group-hover:scale-x-100 duration-200 absolute bottom-0 w-full bg-black rounded-full">
+                    </div>
+                    {% if link.links.size > 0 %}
+                        <ul class="absolute bg-white z-50 w-52 shadow bottom-0 left-0 transform translate-y-full border p-2 rounded group-hover:flex flex-col hidden">
+                            {% for sublink in link.links %}
+                                <li class="flex-shrink-0 hover:bg-slate-100 rounded flex text-sm capitalize font-normal">
+                                    <a class="flex-1 py-1 px-2" href="{{ sublink.url }}">{{ sublink.title }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </nav>
+        <div class="flex justify-end gap-3" id="header__icons">
+            <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="24" 
+                height="24" 
+                viewBox="0 0 24 24" 
+                fill="none"
+                stroke="currentColor" 
+                stroke-width="2" 
+                stroke-linecap="round" 
+                stroke-linejoin="round"
+                class="flex-shrink-0 cursor-pointer"
+            >
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.3-4.3"></path>
+            </svg>
+            <a href="{{ routes.cart_url }}" class="relative">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="8" cy="21" r="1"></circle>
+                    <circle cx="19" cy="21" r="1"></circle>
+                    <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>
+                </svg>
+                {% unless cart.empty %}
+                    <div
+                        class="bottom-0 right-0 w-5 h-5 absolute bg-blue-500 text-white flex justify-center items-center text-xs font-bold rounded-full transform translate-x-1/2 translate-y-1/2">
+                        {{ cart.item_count }}
+                    </div>
+                {% endunless %}
+            </a>
+        </div>
+    </div>
+</header>
